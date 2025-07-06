@@ -5,10 +5,13 @@ from shot import Shot
 
 class Player(CircleShape):
 
+
     
     def __init__(self, x, y):
         super().__init__(x, y, PLAYER_RADIUS)
         self.rotation = 0
+        self.player_timer = 0
+        self.can_shoot = True
         
 
     # in the player class
@@ -27,6 +30,11 @@ class Player(CircleShape):
         self.rotation += PLAYER_TURN_SPEED*dt
 
     def update(self, dt):
+        if self.player_timer <= 0:
+            self.can_shoot = True
+        else:
+            self.player_timer-=dt
+        
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_a]:
@@ -38,7 +46,10 @@ class Player(CircleShape):
         if keys[pygame.K_s]:
             self.move(-dt)
         if keys[pygame.K_SPACE]:
-            self.shoot()
+            if self.can_shoot:
+                self.shoot()
+                self.can_shoot = False
+                self.player_timer = PLAYER_SHOOT_COOLDOWN
             
     
     def move(self, dt):
